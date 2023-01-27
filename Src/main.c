@@ -21,6 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include "lcd.h"
 
 /* USER CODE END Includes */
 
@@ -83,6 +85,8 @@ static void MX_SPI2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+		int slave_addr=0;
+		char I2c_Number_Buf[10];
 
   /* USER CODE END 1 */
 
@@ -113,7 +117,10 @@ int main(void)
   MX_RTC_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+	RM_LCD_Init();
+	RM_LCD_Goto(1,0);
+	RM_LCD_PutStr("I2C SCANING...");	
+	HAL_Delay(100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,10 +130,36 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_RESET); //RED LED is ON
-    HAL_Delay(100);
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_SET); // RED LED is OFF
-		HAL_Delay(100);
+		 for(slave_addr=0;slave_addr<128;slave_addr++)
+		 { 
+				 if((HAL_I2C_IsDeviceReady(&hi2c1,(slave_addr<<1),1,10))==HAL_OK)
+				 {
+								RM_LCD_Write_Str(0 ,1,"                ");
+								sprintf(I2c_Number_Buf,"%d",slave_addr);
+								if(slave_addr==0x68)
+								{
+										RM_LCD_Write_Str(0 ,1,"DS1307 Found:");
+										RM_LCD_Write_Str(13 ,1,I2c_Number_Buf);
+										HAL_Delay(1000);
+										HAL_Delay(1000);
+								}
+								else if(slave_addr==0x50)
+								{
+										RM_LCD_Write_Str(0 ,1,"EEPROM Found:");
+										RM_LCD_Write_Str(13 ,1,I2c_Number_Buf);
+										HAL_Delay(1000);
+										HAL_Delay(1000);
+							
+								}
+								else
+								{					
+										 RM_LCD_Write_Str(0 ,1,"Device Found:");
+										 RM_LCD_Write_Str(13 ,1,I2c_Number_Buf);
+										 HAL_Delay(1000);
+										 HAL_Delay(500);
+								}
+				 }
+	   }
   }
   /* USER CODE END 3 */
 }

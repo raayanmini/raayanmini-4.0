@@ -21,6 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
+#include "esp8266.h"
+#include "lcd.h"
 
 /* USER CODE END Includes */
 
@@ -113,7 +117,15 @@ int main(void)
   MX_RTC_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+	RM_LCD_Init();
+	RM_LCD_clear();
+	
+	RM_LCD_Goto(3,0);
+	RM_LCD_PutStr("UART-WiFi");
+	
+	WiFi_Init();
+	
+	RM_LCD_clear();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,10 +135,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_RESET); //RED LED is ON
-    HAL_Delay(100);
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_SET); // RED LED is OFF
-		HAL_Delay(100);
+		WiFi_Transmit();
+		RM_LCD_Goto(0,0);
+		RM_LCD_PutStr("Transmit Data");
+		HAL_Delay(1000);
+		HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -456,7 +469,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 9600;
+  huart6.Init.BaudRate = 115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;

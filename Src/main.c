@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <lcd.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,7 +74,9 @@ static void MX_SPI2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+unsigned char RX_Buff[10];
+char Lcd_Buff[30];
+int 		ISR_Flag=0;
 /* USER CODE END 0 */
 
 /**
@@ -92,7 +95,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+	char Rx_Buff,Tx_Buff='A';
+	
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -113,7 +117,11 @@ int main(void)
   MX_RTC_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+	RM_LCD_Init();
+	RM_LCD_Clear();
+	HAL_Delay(100);
+	RM_LCD_Write_Str(3,0,"SPI LoopBack");
+	HAL_Delay(3000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,10 +131,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_RESET); //RED LED is ON
-    HAL_Delay(100);
-		HAL_GPIO_WritePin(GPIOB, RED_LED_Pin, GPIO_PIN_SET); // RED LED is OFF
-		HAL_Delay(100);
+		 HAL_SPI_TransmitReceive(&hspi1,(uint8_t *)&Tx_Buff, (uint8_t *)&Rx_Buff,1,100);
+		 RM_LCD_Write_CMD(0xC0);
+     RM_LCD_Write_DATA(Rx_Buff);
   }
   /* USER CODE END 3 */
 }

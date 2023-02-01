@@ -441,6 +441,11 @@
               <FileType>1</FileType>
               <FilePath>../Src/stm32f4xx_hal_msp.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\lcd.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
